@@ -35,7 +35,6 @@ RUN cp /build/main .
 FROM scratch
 
 COPY --from=builder /dist/main /
-# COPY ./database/data.json /database/data.json
 
 # Command to run the executable
 ENTRYPOINT ["/main"]

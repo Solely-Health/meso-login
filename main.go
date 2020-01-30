@@ -1,39 +1,21 @@
 package main
 
 import (
-	"database/sql"
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
 	"io/ioutil"
 	"log"
 	"net/http"
-	// "github.com/meso-org/meso-login/database"
+
+	"github.com/gorilla/mux"
+	"github.com/meso-org/meso-login/database"
 )
 
 var (
-	db Database
+	db database.Database
 )
 
-type Database struct {
-	DB *sql.DB
-}
-
-func (database *Database) InitializeDB(DbUser, DbPassword, DbPort, DbHost, DbName string) {
-	var err error
-	DBURL := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=disable password=%s", DbHost, DbPort, DbUser, DbName, DbPassword)
-
-	// database.DB, err = gorm.Open(Dbdriver, DBURL)
-	database.DB, err = sql.Open("postgres", DBURL)
-	if err != nil {
-		fmt.Printf("Cannot connect to database")
-		log.Fatal("This is the error:", err)
-	} else {
-		fmt.Printf("We are connected to the database")
-	}
-}
-
-// User asdasd
+// User structsaf asds
 type User struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
@@ -66,15 +48,18 @@ func registerUser(w http.ResponseWriter, r *http.Request) {
 // }
 
 func main() {
-	// this is database vars
+
+	// TODO: use env package to grab env values
 	var (
 		DbHost     = "datastore"
 		DbUser     = "steven"
 		DbPassword = "password"
-		DbNam      = "meso_datastore"
+		DbName     = "meso_datastore"
 		DbPort     = "5432"
 	)
-	db.InitializeDB(DbUser, DbPassword, DbPort, DbHost, DbNam)
+	db.InitializeDB(DbUser, DbPassword, DbPort, DbHost, DbName)
+	db.MigrateDB()
+	defer db.CloseDB()
 
 	router := mux.NewRouter()
 	router.HandleFunc("/register", registerUser)
