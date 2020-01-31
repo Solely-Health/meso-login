@@ -35,9 +35,10 @@ func (database *Database) CloseDB() {
 func (database *Database) MigrateDB() {
 	fmt.Println("Migrating the table")
 	createStatement := `
-	CREATE TABLE users
-		username string,
-		password string
+	CREATE TABLE users (
+		username varchar(255),
+		password varchar(255)
+	);
 	`
 	_, err := database.DB.Exec(createStatement)
 	if err != nil {
